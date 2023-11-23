@@ -1,25 +1,47 @@
-const chaveApi = "b798092f3f9f95ec6dcb70749b496d3c"
+const chaveDaApi = "cd31863ae267407cb01212131232011";
 
-const botao_busca = document.querySelector(".btn-busca")
+const botaoDeBusca = document.querySelector(".btn-busca");
 
-botao_busca.addEventListener("click", async () => {
-    const cidade = document.getElementById("input-busca").value
+botaoDeBusca.addEventListener("click", async () => {
+  const cidade = document.getElementById("input-busca").value;
 
-    const dados =  await busca_dados_cidade (cidade)   
-    
-})
+  if (!cidade) return;
 
-async function busca_dados_cidade(cidade) {
-    const apiUrl =`https://api.weatherapi.com/v1/current.json?
-    key=${chaveApi}&q${cidade}&aqi=no&lang=pt`
+  const dados = await buscarDadosDaCidade(cidade);
 
-    const resposta = await fetch (apiUrl)
-    const dados = resposta.json()
-    return dados
+  if (dados) preencherDadosNaTela(dados, cidade);
+});
 
+async function buscarDadosDaCidade(cidade) {
+  const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${chaveDaApi}&q=${cidade}&aqi=no&lang=pt`;
+
+  const resposta = await fetch(apiUrl);
+
+  if (resposta.status !== 200) return;
+
+  const dados = resposta.json();
+
+  return dados;
 }
 
-function preencher_dados_tela(dados, cidade) {
-    document.getElementById("cidade").textContent = cidade;
-    
+function preencherDadosNaTela(dados, cidade) {
+  const temperatura = dados.current.temp_c;
+  const condicao = dados.current.condition.text;
+  const humidade = dados.current.humidity;
+  const velocidadeDoVento = dados.current.wind_kph;
+  const iconeCondicao = dados.current.condition.icon;
+
+  document.getElementById("cidade").textContent = cidade;
+
+  document.getElementById("temperatura").textContent = `${temperatura} ºC`;
+
+  document.getElementById("condicao").textContent = condicao;
+
+  document.getElementById("humidade").textContent = `${humidade}%`;
+
+  document.getElementById(
+    "velocidade-vento"
+  ).textContent = `${velocidadeDoVento} km/h`;
+
+  document.getElementById("icone-condicao").setAttribute("src", iconeCondicao);
 }
